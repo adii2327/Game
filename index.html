@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Game Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Fun Game</h1>
+        <p>Welcome to the Fun Game! Test your skills and have a great time.</p>
+    </header>
+    <main>
+        <div class="game-area">
+            <canvas id="snakeCanvas" width="350" height="250"></canvas>
+        </div>
+        <button class="start-btn" id="startBtn">Start Game</button>
+    </main>
+    <footer>
+        <p>&copy; 2025 Fun Game. All rights reserved.</p>
+    </footer>
+    <script>
+    // Colorful Snake Game
+    const canvas = document.getElementById('snakeCanvas');
+    const ctx = canvas.getContext('2d');
+    const box = 25;
+    let snake, direction, food, score, gameInterval, colors;
+
+    function randomColor() {
+        const h = Math.floor(Math.random() * 360);
+        return `hsl(${h}, 80%, 50%)`;
+    }
+
+    function resetGame() {
+        snake = [
+            {x: 5, y: 5},
+            {x: 4, y: 5},
+            {x: 3, y: 5}
+        ];
+        direction = 'RIGHT';
+        food = {
+            x: Math.floor(Math.random() * (canvas.width/box)),
+            y: Math.floor(Math.random() * (canvas.height/box))
+        };
+        score = 0;
+        colors = snake.map(() => randomColor());
+    }
+
+    function drawBackground() {
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0, '#f7971e');
+        grad.addColorStop(1, '#ffd200');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawSnake() {
+        snake.forEach((segment, i) => {
+            ctx.fillStyle = colors[i] || randomColor();
+            ctx.fillRect(segment.x * box, segment.y * box, box, box);
+            ctx.strokeStyle = '#fff';
+            ctx.strokeRect(segment.x * box, segment.y * box, box, box);
+        });
+    }
+
+    function drawFood() {
+        ctx.fillStyle = randomColor();
+        ctx.beginPath();
+        ctx.arc(food.x * box + box/2, food.y * box + box/2, box/2 - 2, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    function drawScore() {
+        ctx.fillStyle = '#28527a';
+        ctx.font = '18px Segoe UI';
+        ctx.fillText('Score: ' + score, 10, 22);
+    }
+
+    function collision(newHead, arr) {
+        return arr.some(seg => seg.x === newHead.x && seg.y === newHead.y);
+    }
+
+    function update() {
+        drawBackground();
+        drawSnake();
+        drawFood();
+        drawScore();
+
+        let head = { ...snake[0] };
+        if (direction === 'LEFT') head.x--;
+        if (direction === 'UP') head.y--;
+        if (direction === 'RIGHT') head.x++;
+        if (direction === 'DOWN') head.y++;
+
+        // Wall collision
+        if (head.x < 0 || head.x >= canvas.width/box || head.y < 0 || head.y >= canvas.height/box || collision(head, snake)) {
+            clearInterval(gameInterval);
+            ctx.fillStyle = '#d7263d';
+            ctx.font = 'bold 32px Segoe UI';
+            ctx.fillText('Game Over!', 70, canvas.height/2);
+            return;
+        }
+
+        // Food collision
+        if (head.x === food.x && head.y === food.y) {
+            score++;
+            snake.unshift(head);
+            colors.unshift(randomColor());
+            food = {
+                x: Math.floor(Math.random() * (canvas.width/box)),
+                y: Math.floor(Math.random() * (canvas.height/box))
+            };
+        } else {
+            snake.unshift(head);
+            colors.unshift(randomColor());
+            snake.pop();
+            colors.pop();
+        }
+    }
+
+    function startGame() {
+        resetGame();
+        if (gameInterval) clearInterval(gameInterval);
+        gameInterval = setInterval(update, 120);
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
+        if (e.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
+        if (e.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
+        if (e.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
+    });
+
+    document.getElementById('startBtn').onclick = startGame;
+    // Draw initial state
+    drawBackground();
+    ctx.fillStyle = '#28527a';
+    ctx.font = '20px Segoe UI';
+    ctx.fillText('Press Start to Play!', 60, canvas.height/2);
+    </script>
+</body>
+</html>
