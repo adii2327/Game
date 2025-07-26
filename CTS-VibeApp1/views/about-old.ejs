@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">CTS VibeApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api/health">Health Check</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 text-center text-primary mb-5">About CTS VibeApp</h1>
+                
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">🎯 Project Overview</h5>
+                                <p class="card-text">
+                                    CTS VibeApp is a modern Node.js web application built with Express.js framework, 
+                                    designed for deployment on Microsoft Azure App Service. This application demonstrates 
+                                    best practices for cloud-native development.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">🛠️ Technology Stack</h5>
+                                <ul class="list-unstyled">
+                                    <li>• Node.js Runtime</li>
+                                    <li>• Express.js Framework</li>
+                                    <li>• EJS Template Engine</li>
+                                    <li>• Bootstrap 5 UI</li>
+                                    <li>• Azure App Service</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">🔧 Features</h5>
+                                <ul class="list-unstyled">
+                                    <li>• Security middleware (Helmet)</li>
+                                    <li>• CORS support</li>
+                                    <li>• Request logging (Morgan)</li>
+                                    <li>• Health check endpoint</li>
+                                    <li>• Error handling</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">🚀 Getting Started</h5>
+                                <p class="card-text">
+                                    This application is ready for Azure deployment and includes all necessary 
+                                    configuration files. You can run it locally for development or deploy 
+                                    it directly to Azure App Service.
+                                </p>
+                                <div class="mt-3">
+                                    <a href="/" class="btn btn-primary">Back to Home</a>
+                                    <a href="/api/health" class="btn btn-outline-primary">Check Health</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center text-muted py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2025 CTS VibeApp. Built with Node.js and Express.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
