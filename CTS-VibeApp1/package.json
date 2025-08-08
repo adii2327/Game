@@ -21,7 +21,10 @@
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "moment-timezone": "^0.5.45",
+    "socket.io": "^4.7.5",
+    "axios": "^1.7.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

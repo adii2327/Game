@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .time-zone-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .time-zone-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .world-clock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .world-clock-item {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .converter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .timezone-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px;
+        }
+        
+        .convert-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .time-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .comparison-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-pills .nav-link.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-clock me-2"></i>CTS Global Time Converter
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/time-converter"><i class="fas fa-clock me-1"></i>Time Converter</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/tasks"><i class="fas fa-tasks me-1"></i>Tasks</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center mb-4">
+                    <h1 class="display-4 fw-bold text-primary">
+                        <i class="fas fa-globe-americas me-3"></i>Global Time Converter
+                    </h1>
+                    <p class="lead text-muted">Convert time across all major timezones worldwide</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-pills nav-justified mb-4" id="timeConverterTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="converter-tab" data-bs-toggle="pill" data-bs-target="#converter" type="button" role="tab">
+                    <i class="fas fa-exchange-alt me-2"></i>Time Converter
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="worldclock-tab" data-bs-toggle="pill" data-bs-target="#worldclock" type="button" role="tab">
+                    <i class="fas fa-clock me-2"></i>World Clock
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="comparison-tab" data-bs-toggle="pill" data-bs-target="#comparison" type="button" role="tab">
+                    <i class="fas fa-balance-scale me-2"></i>Compare Zones
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="timeConverterTabContent">
+            <!-- Time Converter Tab -->
+            <div class="tab-pane fade show active" id="converter" role="tabpanel">
+                <div class="converter-section">
+                    <h3 class="text-center mb-4"><i class="fas fa-exchange-alt me-2"></i>Convert Time Between Zones</h3>
+                    
+                    <form id="timeConverterForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Date</label>
+                                <input type="date" class="form-control timezone-select" id="convertDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Time</label>
+                                <input type="time" class="form-control timezone-select" id="convertTime" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">From Timezone</label>
+                                <select class="form-select timezone-select" id="fromTimezone" required>
+                                    <option value="">Select timezone...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">To Timezone</label>
+                                <select class="form-select timezone-select" id="toTimezone" required>
+                                    <option value="">Select timezone...</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="convert-btn btn btn-lg">
+                                <i class="fas fa-sync-alt me-2"></i>Convert Time
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Conversion Result -->
+                    <div id="conversionResult" class="mt-4" style="display: none;">
+                        <div class="result-card">
+                            <h4 class="text-center mb-4"><i class="fas fa-check-circle me-2"></i>Conversion Result</h4>
+                            <div class="row">
+                                <div class="col-md-6 text-center">
+                                    <h5>Original Time</h5>
+                                    <div class="time-display" id="originalTime"></div>
+                                    <p id="originalDetails"></p>
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    <h5>Converted Time</h5>
+                                    <div class="time-display" id="convertedTime"></div>
+                                    <p id="convertedDetails"></p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <p class="h6" id="timeDifference"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- World Clock Tab -->
+            <div class="tab-pane fade" id="worldclock" role="tabpanel">
+                <h3 class="text-center mb-4"><i class="fas fa-globe me-2"></i>Live World Clock</h3>
+                <div class="world-clock-grid" id="worldClockGrid">
+                    <!-- World clock items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Timezone Comparison Tab -->
+            <div class="tab-pane fade" id="comparison" role="tabpanel">
+                <div class="converter-section">
+                    <h3 class="text-center mb-4"><i class="fas fa-balance-scale me-2"></i>Compare Multiple Timezones</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold">Select Timezones to Compare</label>
+                            <select class="form-select timezone-select" id="comparisonTimezones" multiple>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                            <small class="text-muted">Hold Ctrl/Cmd to select multiple timezones</small>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="convert-btn btn w-100" onclick="compareTimezones()">
+                                <i class="fas fa-balance-scale me-2"></i>Compare
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="comparisonResult" class="mt-4" style="display: none;">
+                        <div class="comparison-table">
+                            <table class="table table-striped mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Timezone</th>
+                                        <th>Current Time</th>
+                                        <th>Date</th>
+                                        <th>UTC Offset</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparisonTableBody">
+                                    <!-- Comparison results will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2025 CTS VibeApp. Global Time Converter for Enterprise Teams.</p>
+            <p class="small">Supporting teams across all timezones worldwide 🌍</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Initialize Socket.IO
+        const socket = io();
+        
+        // Set today's date as default
+        document.getElementById('convertDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('convertTime').value = new Date().toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'});
+        
+        // Load timezones on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTimezones();
+            loadWorldClock();
+        });
+        
+        // Load timezones from API
+        async function loadTimezones() {
+            try {
+                const response = await fetch('/api/timezones');
+                const timezones = await response.json();
+                
+                const fromSelect = document.getElementById('fromTimezone');
+                const toSelect = document.getElementById('toTimezone');
+                const comparisonSelect = document.getElementById('comparisonTimezones');
+                
+                // Group timezones by region
+                const regions = {};
+                timezones.forEach(tz => {
+                    if (!regions[tz.region]) regions[tz.region] = [];
+                    regions[tz.region].push(tz);
+                });
+                
+                // Populate selects with grouped options
+                Object.keys(regions).forEach(region => {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = region;
+                    
+                    regions[region].forEach(tz => {
+                        const option = document.createElement('option');
+                        option.value = tz.value;
+                        option.textContent = `${tz.label} (${tz.offset})`;
+                        optgroup.appendChild(option);
+                    });
+                    
+                    fromSelect.appendChild(optgroup.cloneNode(true));
+                    toSelect.appendChild(optgroup.cloneNode(true));
+                    comparisonSelect.appendChild(optgroup.cloneNode(true));
+                });
+                
+                // Set default timezones
+                fromSelect.value = 'America/New_York';
+                toSelect.value = 'Asia/Kolkata';
+                
+            } catch (error) {
+                console.error('Error loading timezones:', error);
+            }
+        }
+        
+        // Time converter form submission
+        document.getElementById('timeConverterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                date: document.getElementById('convertDate').value,
+                time: document.getElementById('convertTime').value,
+                fromTimezone: document.getElementById('fromTimezone').value,
+                toTimezone: document.getElementById('toTimezone').value
+            };
+            
+            try {
+                const response = await fetch('/api/convert-time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    displayConversionResult(result);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error converting time:', error);
+                alert('Error converting time. Please try again.');
+            }
+        });
+        
+        // Display conversion result
+        function displayConversionResult(result) {
+            document.getElementById('originalTime').textContent = result.original.datetime.split(' ')[1];
+            document.getElementById('originalDetails').innerHTML = `
+                <strong>${result.original.timezone.split('/')[1].replace('_', ' ')}</strong><br>
+                ${result.original.datetime.split(' ')[0]} (${result.original.day})<br>
+                UTC ${result.original.offset}
+            `;
+            
+            document.getElementById('convertedTime').textContent = result.converted.datetime.split(' ')[1];
+            document.getElementById('convertedDetails').innerHTML = `
+                <strong>${result.converted.timezone.split('/')[1].replace('_', ' ')}</strong><br>
+                ${result.converted.datetime.split(' ')[0]} (${result.converted.day})<br>
+                UTC ${result.converted.offset}
+            `;
+            
+            document.getElementById('timeDifference').textContent = 
+                `Time difference: ${Math.abs(result.timeDifference.hours)} hours ${result.timeDifference.hours >= 0 ? 'ahead' : 'behind'}`;
+            
+            document.getElementById('conversionResult').style.display = 'block';
+        }
+        
+        // Load world clock
+        async function loadWorldClock() {
+            try {
+                const response = await fetch('/api/world-clock');
+                const worldClock = await response.json();
+                updateWorldClockDisplay(worldClock);
+            } catch (error) {
+                console.error('Error loading world clock:', error);
+            }
+        }
+        
+        // Update world clock display
+        function updateWorldClockDisplay(worldClock) {
+            const grid = document.getElementById('worldClockGrid');
+            grid.innerHTML = '';
+            
+            worldClock.forEach(clock => {
+                const clockItem = document.createElement('div');
+                clockItem.className = 'world-clock-item';
+                clockItem.innerHTML = `
+                    <h5>${clock.city}</h5>
+                    <div class="time-display" style="font-size: 2rem;">${clock.time}</div>
+                    <p class="mb-1">${clock.date}</p>
+                    <small>${clock.day} | UTC ${clock.offset}</small>
+                `;
+                grid.appendChild(clockItem);
+            });
+        }
+        
+        // Listen for real-time world clock updates
+        socket.on('world-clock-update', function(worldClock) {
+            updateWorldClockDisplay(worldClock);
+        });
+        
+        // Compare timezones
+        async function compareTimezones() {
+            const select = document.getElementById('comparisonTimezones');
+            const selectedTimezones = Array.from(select.selectedOptions).map(option => option.value);
+            
+            if (selectedTimezones.length === 0) {
+                alert('Please select at least one timezone to compare.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/compare-timezones', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ timezones: selectedTimezones })
+                });
+                
+                const comparison = await response.json();
+                
+                if (response.ok) {
+                    displayComparison(comparison);
+                } else {
+                    alert('Error: ' + comparison.error);
+                }
+            } catch (error) {
+                console.error('Error comparing timezones:', error);
+                alert('Error comparing timezones. Please try again.');
+            }
+        }
+        
+        // Display timezone comparison
+        function displayComparison(comparison) {
+            const tbody = document.getElementById('comparisonTableBody');
+            tbody.innerHTML = '';
+            
+            comparison.forEach(tz => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${tz.timezone.split('/')[1].replace('_', ' ')}</strong></td>
+                    <td>${tz.time}</td>
+                    <td>${tz.date}</td>
+                    <td>UTC ${tz.offset} (${tz.offsetHours > 0 ? '+' : ''}${tz.offsetHours}h)</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('comparisonResult').style.display = 'block';
+        }
+        
+        // Update world clock every second when on world clock tab
+        document.getElementById('worldclock-tab').addEventListener('click', function() {
+            loadWorldClock();
+        });
+    </script>
+</body>
+</html>

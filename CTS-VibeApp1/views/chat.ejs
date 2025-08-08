@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .chat-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 70vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .chat-header {
+            background: #007acc;
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+        }
+        .chat-messages {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+        .message-avatar {
+            font-size: 2em;
+            margin-right: 10px;
+        }
+        .message-content {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 70%;
+        }
+        .message-user {
+            font-weight: bold;
+            color: #007acc;
+            margin-bottom: 5px;
+        }
+        .message-time {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .chat-input {
+            display: flex;
+            padding: 20px;
+            gap: 10px;
+            border-top: 1px solid #eee;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+        }
+        .send-btn {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        .online-users {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .user-badge {
+            display: inline-block;
+            background: #26de81;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <h1>💬 Team Chat</h1>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/tasks">Tasks</a>
+                <a href="/chat" class="active">Chat</a>
+                <a href="/calendar">Calendar</a>
+                <a href="/analytics">Analytics</a>
+            </div>
+        </nav>
+
+        <div class="content">
+            <div class="online-users">
+                <h3>🟢 Online Team Members</h3>
+                <span class="user-badge">👩‍💻 Alice</span>
+                <span class="user-badge">👨‍💼 Bob</span>
+                <span class="user-badge">👩‍🎨 Carol</span>
+                <span class="user-badge">🧑‍💻 David</span>
+                <span class="user-badge">👨‍🔬 You</span>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2>💬 Team General Chat</h2>
+                    <p>Real-time collaboration space for CTS team</p>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="loading">Loading messages...</div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Type your message...">
+                    <button class="send-btn" onclick="sendMessage()">Send 📤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let messages = [];
+
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/chat/messages');
+                messages = await response.json();
+                displayMessages();
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        function displayMessages() {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = messages.map(msg => `
+                <div class="message">
+                    <div class="message-avatar">${msg.avatar}</div>
+                    <div class="message-content">
+                        <div class="message-user">${msg.user}</div>
+                        <div class="message-text">${msg.message}</div>
+                        <div class="message-time">${msg.timestamp}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const messageText = input.value.trim();
+            
+            if (messageText) {
+                // Add message to local array (simulate real-time)
+                const newMessage = {
+                    id: Date.now(),
+                    user: 'You',
+                    message: messageText,
+                    timestamp: new Date().toLocaleString(),
+                    avatar: '👨‍🔬'
+                };
+                
+                messages.push(newMessage);
+                displayMessages();
+                input.value = '';
+                
+                // Simulate response from team member
+                setTimeout(() => {
+                    const responses = [
+                        'Great point! 👍',
+                        'Thanks for sharing!',
+                        'Agreed! Let\'s discuss this further.',
+                        'Interesting idea 💡',
+                        'I\'ll look into that right away!'
+                    ];
+                    
+                    const teamMembers = [
+                        { name: 'Alice', avatar: '👩‍💻' },
+                        { name: 'Bob', avatar: '👨‍💼' },
+                        { name: 'Carol', avatar: '👩‍🎨' },
+                        { name: 'David', avatar: '🧑‍💻' }
+                    ];
+                    
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+                    
+                    const responseMessage = {
+                        id: Date.now() + 1,
+                        user: randomMember.name,
+                        message: randomResponse,
+                        timestamp: new Date().toLocaleString(),
+                        avatar: randomMember.avatar
+                    };
+                    
+                    messages.push(responseMessage);
+                    displayMessages();
+                }, 1000 + Math.random() * 2000);
+            }
+        }
+
+        // Handle Enter key in message input
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Load messages on page load
+        loadMessages();
+
+        // Simulate receiving new messages every 30 seconds
+        setInterval(() => {
+            if (Math.random() > 0.7) { // 30% chance
+                const autoMessages = [
+                    'Coffee break anyone? ☕',
+                    'Great work team! 🎉',
+                    'Sprint review meeting in 10 minutes!',
+                    'New deployment is live! 🚀',
+                    'Don\'t forget the standup tomorrow morning!'
+                ];
+                
+                const teamMembers = [
+                    { name: 'Alice', avatar: '👩‍💻' },
+                    { name: 'Bob', avatar: '👨‍💼' },
+                    { name: 'Carol', avatar: '👩‍🎨' },
+                    { name: 'David', avatar: '🧑‍💻' }
+                ];
+                
+                const randomMessage = autoMessages[Math.floor(Math.random() * autoMessages.length)];
+                const randomMember = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+                
+                const newMessage = {
+                    id: Date.now(),
+                    user: randomMember.name,
+                    message: randomMessage,
+                    timestamp: new Date().toLocaleString(),
+                    avatar: randomMember.avatar
+                };
+                
+                messages.push(newMessage);
+                displayMessages();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

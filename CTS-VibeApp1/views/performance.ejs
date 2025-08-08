@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Performance - CTS VibeApp</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .performance-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .performance-card:hover {
+            transform: translateY(-5px);
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            background: conic-gradient(from 0deg, #007acc 0%, #007acc var(--score), #f0f0f0 var(--score), #f0f0f0 100%);
+            position: relative;
+        }
+        .score-inner {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007acc;
+        }
+        .achievement-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .project-progress {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007acc, #00d4aa);
+            transition: width 0.3s ease;
+        }
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .trend-up { color: #28a745; }
+        .trend-down { color: #dc3545; }
+        .filter-controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-filter {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .btn-filter:hover {
+            background: #0056a3;
+        }
+        .btn-filter.active {
+            background: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <h1>📊 Employee Performance Analytics</h1>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/performance" class="active">Performance</a>
+                <a href="/tasks">Tasks</a>
+                <a href="/analytics">Analytics</a>
+            </div>
+        </nav>
+
+        <div class="content">
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <h3>🔍 Filter Performance Data</h3>
+                <div>
+                    <label>Time Period:</label>
+                    <button class="btn-filter active" onclick="filterByPeriod('week')">This Week</button>
+                    <button class="btn-filter" onclick="filterByPeriod('month')">This Month</button>
+                    <button class="btn-filter" onclick="filterByPeriod('quarter')">This Quarter</button>
+                    <button class="btn-filter" onclick="filterByPeriod('year')">This Year</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <label>Department:</label>
+                    <button class="btn-filter active" onclick="filterByDept('all')">All Departments</button>
+                    <button class="btn-filter" onclick="filterByDept('dev')">Development</button>
+                    <button class="btn-filter" onclick="filterByDept('qa')">QA Testing</button>
+                    <button class="btn-filter" onclick="filterByDept('devops')">DevOps</button>
+                </div>
+            </div>
+
+            <!-- Performance Overview -->
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <h3>🎯 Overall Performance Score</h3>
+                    <div class="score-circle" style="--score: 87%;">
+                        <div class="score-inner">87%</div>
+                    </div>
+                    <div class="metric-item">
+                        <span>Tasks Completed:</span>
+                        <span class="trend-up">156 ↗️</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>Quality Score:</span>
+                        <span class="trend-up">4.8/5.0 ↗️</span>
+                    </div>
+                    <div class="metric-item">
+                        <span>Team Collaboration:</span>
+                        <span class="trend-up">92% ↗️</span>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>🏆 Recent Achievements</h3>
+                    <div id="achievements">
+                        <div class="achievement-badge">🏆 Code Quality Champion</div>
+                        <div class="achievement-badge">🤝 Team Collaboration Star</div>
+                        <div class="achievement-badge">💡 Innovation Leader</div>
+                        <div class="achievement-badge">⚡ Fast Delivery Expert</div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <strong>Total Points: 485</strong>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%;"></div>
+                        </div>
+                        <small>85% towards next level (Expert)</small>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>📈 Monthly Trends</h3>
+                    <canvas id="monthlyTrendChart" width="300" height="200"></canvas>
+                </div>
+
+                <div class="performance-card">
+                    <h3>🛠️ Skill Development</h3>
+                    <div id="skillMetrics">
+                        <div class="metric-item">
+                            <span>JavaScript</span>
+                            <span>92% <span class="trend-up">(+3%)</span></span>
+                        </div>
+                        <div class="metric-item">
+                            <span>Azure Cloud</span>
+                            <span>88% <span class="trend-up">(+5%)</span></span>
+                        </div>
+                        <div class="metric-item">
+                            <span>Node.js</span>
+                            <span>85% <span class="trend-up">(+4%)</span></span>
+                        </div>
+                        <div class="metric-item">
+                            <span>Testing</span>
+                            <span>82% <span class="trend-up">(+2%)</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Projects -->
+            <div class="performance-card">
+                <h3>🚀 Current Projects</h3>
+                <div class="project-progress">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong>Azure Migration Project</strong>
+                        <span>78% Complete</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%;"></div>
+                    </div>
+                    <div style="margin-top: 5px; color: #666;">
+                        Role: Lead Developer | Due: Aug 15, 2025
+                    </div>
+                </div>
+                
+                <div class="project-progress">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong>API Modernization</strong>
+                        <span>45% Complete</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%;"></div>
+                    </div>
+                    <div style="margin-top: 5px; color: #666;">
+                        Role: Backend Developer | Due: Sep 10, 2025
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Analytics Chart -->
+            <div class="performance-card">
+                <h3>📊 Department Performance Comparison</h3>
+                <canvas id="departmentChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Monthly Trends Chart
+        const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                datasets: [{
+                    label: 'Performance Score',
+                    data: [82, 85, 87, 89, 86, 91, 88, 87],
+                    borderColor: '#007acc',
+                    backgroundColor: 'rgba(0, 122, 204, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: false, min: 80, max: 95 }
+                }
+            }
+        });
+
+        // Department Comparison Chart
+        const deptCtx = document.getElementById('departmentChart').getContext('2d');
+        new Chart(deptCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Development', 'QA Testing', 'DevOps', 'UI/UX'],
+                datasets: [{
+                    label: 'Performance Score',
+                    data: [89, 92, 87, 85],
+                    backgroundColor: [
+                        'rgba(0, 122, 204, 0.8)',
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: false, min: 80, max: 95 }
+                }
+            }
+        });
+
+        // Filter Functions
+        function filterByPeriod(period) {
+            document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            console.log(`Filtering by period: ${period}`);
+            // Add API call to filter data by period
+            loadPerformanceData(period);
+        }
+
+        function filterByDept(dept) {
+            console.log(`Filtering by department: ${dept}`);
+            // Add API call to filter data by department
+        }
+
+        async function loadPerformanceData(period = 'month') {
+            try {
+                const response = await fetch(`/api/productivity-trends?period=${period}`);
+                const data = await response.json();
+                updateCharts(data);
+            } catch (error) {
+                console.error('Error loading performance data:', error);
+            }
+        }
+
+        function updateCharts(data) {
+            // Update charts with new data
+            console.log('Updating charts with:', data);
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            loadPerformanceData();
+        }, 300000);
+
+        // Load initial data
+        loadPerformanceData();
+    </script>
+</body>
+</html>
