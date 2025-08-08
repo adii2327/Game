@@ -19,13 +19,21 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/live-dashboard">🔴 Live</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/ai-insights">🤖 AI Insights</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            � Advanced
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/live-dashboard">🔴 Live Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/ai-insights">🤖 AI Insights</a></li>
+                            <li><a class="dropdown-item" href="/advanced-projects">📊 Project Management</a></li>
+                            <li><a class="dropdown-item" href="/notifications">🔔 Smart Notifications</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="/tasks">Tasks</a></li>
                     <li class="nav-item"><a class="nav-link" href="/chat">Chat</a></li>
                     <li class="nav-item"><a class="nav-link" href="/calendar">Calendar</a></li>
                     <li class="nav-item"><a class="nav-link" href="/analytics">Analytics</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/projects">Projects</a></li>
                     <li class="nav-item"><a class="nav-link" href="/wellness">Wellness</a></li>
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                 </ul>
@@ -254,6 +262,100 @@
                 </div>
             </div>
         </div>
+
+        <!-- Interactive Features Showcase -->
+        <div class="row mt-5">
+            <div class="col-12 text-center mb-4">
+                <h3 class="display-6 fw-bold text-primary">🎮 Interactive & Data-Rich Features</h3>
+                <p class="lead text-muted">Experience next-generation team collaboration tools</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="feature-card card h-100 border-0 shadow-sm feature-highlight">
+                    <div class="card-body p-4">
+                        <div class="feature-icon text-warning mb-3">
+                            <i class="fas fa-bell fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">🔔 Smart Notifications</h5>
+                        <p class="card-text">AI-powered notification center with intelligent filtering, priority-based alerts, and automated action suggestions.</p>
+                        <div class="mb-3">
+                            <small class="text-muted">Features:</small>
+                            <ul style="font-size: 0.9rem; margin-top: 5px;">
+                                <li>Real-time burnout alerts</li>
+                                <li>Smart optimization suggestions</li>
+                                <li>Automated task recommendations</li>
+                            </ul>
+                        </div>
+                        <a href="/notifications" class="btn btn-outline-warning btn-sm">View Notifications</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="feature-card card h-100 border-0 shadow-sm feature-highlight">
+                    <div class="card-body p-4">
+                        <div class="feature-icon text-success mb-3">
+                            <i class="fas fa-project-diagram fa-2x"></i>
+                        </div>
+                        <h5 class="card-title">📊 Advanced Project Management</h5>
+                        <p class="card-text">Interactive Kanban board with drag-and-drop, AI insights, velocity tracking, and predictive analytics.</p>
+                        <div class="mb-3">
+                            <small class="text-muted">Features:</small>
+                            <ul style="font-size: 0.9rem; margin-top: 5px;">
+                                <li>Drag & drop task management</li>
+                                <li>Sprint velocity prediction</li>
+                                <li>Quality metrics dashboard</li>
+                            </ul>
+                        </div>
+                        <a href="/advanced-projects" class="btn btn-outline-success btn-sm">Explore Projects</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data & Analytics Features -->
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-bar fa-3x" style="color: white;"></i>
+                        </div>
+                        <h5 class="card-title">📈 Rich Data Analytics</h5>
+                        <p class="card-text">Comprehensive reporting with 50+ metrics, trend analysis, and exportable insights.</p>
+                        <a href="/analytics" class="btn btn-light btn-sm">View Analytics</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-calendar-alt fa-3x" style="color: white;"></i>
+                        </div>
+                        <h5 class="card-title">🗓️ Smart Calendar</h5>
+                        <p class="card-text">AI-optimized scheduling, meeting intelligence, and resource booking system.</p>
+                        <a href="/calendar" class="btn btn-light btn-sm">Smart Schedule</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-download fa-3x" style="color: white;"></i>
+                        </div>
+                        <h5 class="card-title">📄 Export & Reports</h5>
+                        <p class="card-text">Generate comprehensive PDF reports, data exports, and executive summaries.</p>
+                        <button onclick="generateReport()" class="btn btn-light btn-sm">Generate Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -302,6 +404,43 @@
                 document.getElementById('deployment-result').innerHTML = '<p class="text-danger">Error loading data</p>';
             }
         }
+
+        // Generate Report Function
+        async function generateReport() {
+            const reportType = prompt('Select report type: team, project, or wellness', 'team');
+            if (reportType && ['team', 'project', 'wellness'].includes(reportType)) {
+                try {
+                    const response = await fetch(`/api/export/pdf-report/${reportType}`);
+                    const data = await response.json();
+                    
+                    // Show success message
+                    alert(`✅ ${data.message}\n📄 Pages: ${data.pages}\n💾 Size: ${data.report_size}\n🔗 Download: ${data.download_url}`);
+                } catch (error) {
+                    alert('❌ Error generating report. Please try again.');
+                }
+            }
+        }
+
+        // Live stats updates
+        function updateLiveStats() {
+            // Simulate real-time data updates
+            const elements = [
+                { id: 'live-users', values: [18, 19, 17, 20, 16] },
+                { id: 'active-tasks', values: [24, 23, 25, 22, 26] },
+                { id: 'completion-rate', values: [87, 89, 85, 91, 88] }
+            ];
+            
+            elements.forEach(element => {
+                const el = document.getElementById(element.id);
+                if (el) {
+                    const randomValue = element.values[Math.floor(Math.random() * element.values.length)];
+                    el.textContent = randomValue + (element.id === 'completion-rate' ? '%' : '');
+                }
+            });
+        }
+
+        // Update live stats every 5 seconds
+        setInterval(updateLiveStats, 5000);
 
         // Auto-refresh demo
         setTimeout(() => {

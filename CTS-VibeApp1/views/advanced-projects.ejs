@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Project Management - CTS VibeApp</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        .project-dashboard {
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .kanban-column {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+        
+        .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .kanban-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .task-count {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .task-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .task-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .task-priority {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .priority-high { background: #ef4444; }
+        .priority-medium { background: #f59e0b; }
+        .priority-low { background: #22c55e; }
+        
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .assignee-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 8px;
+            font-size: 0.7rem;
+        }
+        
+        .task-tags {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .task-tag {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        
+        .progress-ring {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+        
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring .ring-bg {
+            fill: none;
+            stroke: #e5e7eb;
+            stroke-width: 8;
+        }
+        
+        .progress-ring .ring-progress {
+            fill: none;
+            stroke: url(#progressGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .velocity-chart {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            grid-column: span 3;
+            margin-top: 20px;
+        }
+        
+        .ai-insights-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            grid-column: span 3;
+            margin-top: 20px;
+        }
+        
+        .insight-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .add-task-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #d1d5db;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .add-task-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <nav style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto;">
+            <h1>📊 Advanced Project Management</h1>
+            <div>
+                <a href="/" style="color: white; margin: 0 10px;">Home</a>
+                <a href="/dashboard" style="color: white; margin: 0 10px;">Dashboard</a>
+                <a href="/advanced-projects" style="color: white; margin: 0 10px; text-decoration: underline;">Projects</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="project-dashboard">
+        <!-- Project Overview Cards -->
+        <div class="project-grid">
+            <div class="smart-widget">
+                <h4>📈 Sprint Progress</h4>
+                <div class="progress-ring">
+                    <svg width="100" height="100">
+                        <defs>
+                            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="ring-bg" cx="50" cy="50" r="40"></circle>
+                        <circle class="ring-progress" cx="50" cy="50" r="40" stroke-dasharray="176 251"></circle>
+                    </svg>
+                    <div class="progress-text">70%</div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <div style="font-size: 0.9rem; color: #6b7280;">14 of 20 tasks completed</div>
+                </div>
+            </div>
+
+            <div class="smart-widget">
+                <h4>⚡ Team Velocity</h4>
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; font-weight: bold; color: #22c55e; margin: 20px 0;">42</div>
+                    <div style="color: #6b7280;">Story Points / Sprint</div>
+                    <div style="margin-top: 15px;">
+                        <span style="color: #22c55e; font-weight: 600;">↗️ +12%</span>
+                        <span style="color: #6b7280; font-size: 0.9rem;">vs last sprint</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="smart-widget">
+                <h4>🎯 Quality Metrics</h4>
+                <div style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                        <span>Bug Rate</span>
+                        <span style="color: #22c55e; font-weight: 600;">2.1%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                        <span>Test Coverage</span>
+                        <span style="color: #3b82f6; font-weight: 600;">94%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                        <span>Code Review</span>
+                        <span style="color: #22c55e; font-weight: 600;">100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights Panel -->
+        <div class="ai-insights-panel">
+            <h3>🤖 AI Project Insights</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="insight-item">
+                    <strong>🎯 Sprint Prediction:</strong>
+                    <p>Current velocity suggests 95% probability of completing sprint goals. Consider moving 1 story to next sprint for optimal team balance.</p>
+                </div>
+                <div class="insight-item">
+                    <strong>⚠️ Risk Alert:</strong>
+                    <p>Payment module testing is behind schedule. Recommend allocating additional QA resources to prevent delivery delay.</p>
+                </div>
+                <div class="insight-item">
+                    <strong>💡 Optimization:</strong>
+                    <p>UI and API tasks can be parallelized to save 3 days. Frontend team has capacity for early UI development.</p>
+                </div>
+                <div class="insight-item">
+                    <strong>📊 Performance Trend:</strong>
+                    <p>Team productivity increased 18% this month. Key factor: improved code review process and pair programming sessions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban-board">
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">📋 Backlog</div>
+                    <div class="task-count">5</div>
+                </div>
+                <div class="task-list" id="backlog">
+                    <div class="task-card" draggable="true">
+                        <div class="task-priority priority-medium"></div>
+                        <h5>User Authentication API</h5>
+                        <p>Implement JWT-based authentication system</p>
+                        <div class="task-assignee">
+                            <div class="assignee-avatar">A</div>
+                            <span>Alice Chen</span>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Backend</span>
+                            <span class="task-tag">Security</span>
+                        </div>
+                    </div>
+                    <div class="task-card" draggable="true">
+                        <div class="task-priority priority-high"></div>
+                        <h5>Payment Gateway Integration</h5>
+                        <p>Integrate Stripe payment processing</p>
+                        <div class="task-assignee">
+                            <div class="assignee-avatar">B</div>
+                            <span>Bob Smith</span>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Integration</span>
+                            <span class="task-tag">Critical</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="addNewTask('backlog')">+ Add New Task</button>
+            </div>
+
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">🔄 In Progress</div>
+                    <div class="task-count">3</div>
+                </div>
+                <div class="task-list" id="in-progress">
+                    <div class="task-card" draggable="true">
+                        <div class="task-priority priority-high"></div>
+                        <h5>Dashboard UI Components</h5>
+                        <p>Create reusable React components</p>
+                        <div class="task-assignee">
+                            <div class="assignee-avatar">C</div>
+                            <span>Carol Johnson</span>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Frontend</span>
+                            <span class="task-tag">UI/UX</span>
+                        </div>
+                    </div>
+                    <div class="task-card" draggable="true">
+                        <div class="task-priority priority-medium"></div>
+                        <h5>Database Optimization</h5>
+                        <p>Optimize query performance</p>
+                        <div class="task-assignee">
+                            <div class="assignee-avatar">D</div>
+                            <span>David Lee</span>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Database</span>
+                            <span class="task-tag">Performance</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="addNewTask('in-progress')">+ Add New Task</button>
+            </div>
+
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">🔍 Review</div>
+                    <div class="task-count">2</div>
+                </div>
+                <div class="task-list" id="review">
+                    <div class="task-card" draggable="true">
+                        <div class="task-priority priority-low"></div>
+                        <h5>API Documentation</h5>
+                        <p>Complete Swagger documentation</p>
+                        <div class="task-assignee">
+                            <div class="assignee-avatar">A</div>
+                            <span>Alice Chen</span>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Documentation</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="addNewTask('review')">+ Add New Task</button>
+            </div>
+
+            <div class="kanban-column">
+                <div class="kanban-header">
+                    <div class="kanban-title">✅ Done</div>
+                    <div class="task-count">8</div>
+                </div>
+                <div class="task-list" id="done">
+                    <div class="task-card" draggable="true">
+                        <div class="task-priority priority-high"></div>
+                        <h5>Azure Deployment Setup</h5>
+                        <p>Configure CI/CD pipeline</p>
+                        <div class="task-assignee">
+                            <div class="assignee-avatar">B</div>
+                            <span>Bob Smith</span>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">DevOps</span>
+                            <span class="task-tag">Azure</span>
+                        </div>
+                    </div>
+                    <div class="task-card" draggable="true">
+                        <div class="task-priority priority-medium"></div>
+                        <h5>User Interface Design</h5>
+                        <p>Design system and components</p>
+                        <div class="task-assignee">
+                            <div class="assignee-avatar">C</div>
+                            <span>Carol Johnson</span>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Design</span>
+                            <span class="task-tag">UI</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="addNewTask('done')">+ Add New Task</button>
+            </div>
+        </div>
+
+        <!-- Velocity Chart -->
+        <div class="velocity-chart">
+            <h3>📈 Sprint Velocity Trend</h3>
+            <canvas id="velocityChart" style="max-height: 400px;"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Initialize drag and drop for Kanban board
+        document.querySelectorAll('.task-list').forEach(list => {
+            new Sortable(list, {
+                group: 'kanban',
+                animation: 150,
+                onEnd: function(evt) {
+                    updateTaskStatus(evt);
+                }
+            });
+        });
+
+        function updateTaskStatus(evt) {
+            const taskCard = evt.item;
+            const newColumn = evt.to.id;
+            console.log(`Task moved to ${newColumn}`);
+            
+            // Add success animation
+            taskCard.style.background = 'linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%)';
+            setTimeout(() => {
+                taskCard.style.background = '';
+            }, 1000);
+            
+            // Update task counts
+            updateTaskCounts();
+        }
+
+        function updateTaskCounts() {
+            document.querySelectorAll('.kanban-column').forEach(column => {
+                const taskCount = column.querySelectorAll('.task-card').length;
+                column.querySelector('.task-count').textContent = taskCount;
+            });
+        }
+
+        function addNewTask(columnId) {
+            const taskTitle = prompt('Enter task title:');
+            if (taskTitle) {
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card';
+                taskCard.draggable = true;
+                taskCard.innerHTML = `
+                    <div class="task-priority priority-medium"></div>
+                    <h5>${taskTitle}</h5>
+                    <p>New task description</p>
+                    <div class="task-assignee">
+                        <div class="assignee-avatar">U</div>
+                        <span>Unassigned</span>
+                    </div>
+                    <div class="task-tags">
+                        <span class="task-tag">New</span>
+                    </div>
+                `;
+                
+                document.getElementById(columnId).appendChild(taskCard);
+                updateTaskCounts();
+            }
+        }
+
+        // Velocity Chart
+        const velocityCtx = document.getElementById('velocityChart').getContext('2d');
+        new Chart(velocityCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sprint 1', 'Sprint 2', 'Sprint 3', 'Sprint 4', 'Sprint 5', 'Sprint 6'],
+                datasets: [{
+                    label: 'Completed Story Points',
+                    data: [28, 32, 35, 38, 41, 42],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Planned Story Points',
+                    data: [30, 35, 38, 40, 42, 45],
+                    borderColor: '#94a3b8',
+                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                    fill: false,
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Team Velocity Over Time'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Story Points'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initialize task counts
+        updateTaskCounts();
+    </script>
+</body>
+</html>
